@@ -132,7 +132,7 @@ void loop()
   packValueMPU9150(scaled_gy);
   packValueMPU9150(scaled_gz);
   
-  // TODO:Digital values?  Need to adjust data[] length.
+  // TODO: Digital values?  Need to adjust data[] length.
 
   sendMessage();  
   delay(100);
