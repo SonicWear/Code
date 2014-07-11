@@ -90,6 +90,9 @@ void loop() {
   packValueMPU9150(gz >> 2);
 
   sendMessage();
+  Serial.println("Message Sent");
+  
+  delay(50);
 }
 
 void packValueMPU9150(int16_t value) {
@@ -122,6 +125,4 @@ void sendMessage() {
 //    Serial.print(data[pointer], HEX);
 //  }
 //   Serial.print('\n');
-
-   delay(1000);
 }
