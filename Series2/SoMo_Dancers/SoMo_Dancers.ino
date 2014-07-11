@@ -1,5 +1,5 @@
 /*This code sits on the remote devices (what the dancers will wear) 
-  in a multiple dancer setup with XBee Series 2 Radios. 
+  in a multiple dancer setup with XBee Series 2 Radios in API Mode. 
 
   Unit ID for each remote device needs to be set using the keys below:
   
