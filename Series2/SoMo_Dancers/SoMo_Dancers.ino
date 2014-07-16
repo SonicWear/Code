@@ -3,19 +3,19 @@
 
   Unit ID for each remote device needs to be set using the keys below:
   
-    Unit 0: 0x30 // Used for single dancer only (XBee S1)
-    Unit 1: 0x31
-    Unit 2: 0x32
-    Unit 3: 0x33
-    Unit 4: 0x34
-    Unit 5: 0x35
-    Unit 6: 0x36
-    Unit 7: 0x37
-    Unit 8: 0x38
-    Unit 9: 0x39
+    Unit 0: 0x00 // Used for single dancer only (XBee S1)
+    Unit 1: 0x01
+    Unit 2: 0x02
+    Unit 3: 0x03
+    Unit 4: 0x04
+    Unit 5: 0x05
+    Unit 6: 0x06
+    Unit 7: 0x07
+    Unit 8: 0x08
+    Unit 9: 0x09
 */
 
-byte unitID = 0x31; //Unit ID 
+byte unitID = 0x04; //Unit ID 
 
 #include <SoftwareSerial.h>
 #include "Wire.h"

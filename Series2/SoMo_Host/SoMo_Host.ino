@@ -1,14 +1,13 @@
 //This code is for the "Host" Arduino (with XBee Series 2 radio in API mode) attached to laptop.
-//Sends sensor data through to MaxMSP.
+//Forwards sensor data through to MaxMSP with command bytes and terminated with 0xFF.
 
 #include <SoftwareSerial.h>
 SoftwareSerial xbSerial(MOSI, 4); // RX, TX of the Xbee
 
 void setup() 
 {
-  Serial.begin(9600);    //UART to Serial Monitor
-  xbSerial.begin(9600);  //Xbee serial to board
-  Serial1.begin(9600);   //Out to Max
+  Serial.begin(9600);    //Out to Max
+  xbSerial.begin(9600);  //XBee serial to board 
 }
 
 void loop() 
@@ -27,8 +26,6 @@ void loop()
 
     if (byteCount == 31) 
     {
-      Serial.println("Bytecount OK");
-
       //checkSum = 0;
 
       for (int i=0; i<byteCount; i++)
@@ -39,12 +36,13 @@ void loop()
       }
 
       // get the checksum character
-      checkSum = getByte();   // was checkSum +- inChar;  ????
-      Serial.print("\nChecksum: ");
-      Serial.println(checkSum, HEX);
+      checkSum = getByte();
 
-      Serial.print ("\nUnit ID: ");
-      Serial.println(buffer[10],HEX);
+//      Serial.print("\nChecksum: ");
+//      Serial.println(checkSum, HEX);
+
+//      Serial.print ("\nUnit ID: ");
+//      Serial.println(buffer[10],HEX);
 
 /*
       //print data bytes
@@ -66,12 +64,12 @@ void loop()
 */  
      
       // SEND THE BINARY DATA TO MAX
-      Serial1.write(0x81);  //prefix the data with 0x81 (begins message to Max)
-      for (int p = 10; p < 32; p++) 
+      Serial.write(0x81);  //prefix the data with 0x81 (begins message to Max)
+      for (int p = 12; p < 31; p++)
       {
-        Serial1.write(buffer[p]);  //send bytes 10-31
+        Serial.write(buffer[p]);  //send sensor bytes
       }
-      Serial1.write(0xFF);  //suffix the data with 0xFF (ends message to Max)
+      Serial.write(0xFF);  //suffix the data with 0xFF (ends message to Max)
       
       // TODO: Digital values? 0x82        
     }
@@ -84,12 +82,12 @@ byte getByte()
   {
     byte inByte = xbSerial.read();
     
-    if (inByte < 0x10) {
+/*   if (inByte < 0x10) {
      Serial.print("0");
      }
      Serial.print(inByte, HEX);
      Serial.print(" ");
-    
+*/    
     return inByte;
   }
 }
