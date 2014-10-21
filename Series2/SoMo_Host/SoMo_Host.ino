@@ -6,10 +6,13 @@
 
 HardwareSerial & xbSerial = Serial1;     // Direct link to the XBee.  This configuration is used when an Arduino Leonardo with Wireless Proto Shield is used as the Host.
 
-#define LED_UNIT1 2
-#define LED_UNIT2 3
-#define LED_UNIT3 4
-#define LED_UNIT4 5
+#define LED_UNIT1 2   // Red
+#define LED_UNIT2 3   // Blue
+#define LED_UNIT3 4   // Yellow  (Purple)
+#define LED_UNIT4 5   // Green
+
+int timer[5];
+#define LED_TIMEOUT 5000 // Adjust this for timeout duration
 
 void setup() 
 {
@@ -30,55 +33,58 @@ void loop()
   byte inChar=0;
   byte checkSum=0;
   
-  //Read incoming packet starting with 0x7E Start Delimiter
-  if (getByte() ==  0x7E) 
-  {   
-    byteCountMSB = getByte();
-    byteCountLSB  = getByte();   
-    
-    byteCount = (byteCountMSB <<= 8) + byteCountLSB;
-
-    if (byteCount == 31) 
+  doTimer();  
+  
+  if (xbSerial.available())     // Check for incoming data, loop again if none
+  {
+    if (getByte() ==  0x7E)     // Read incoming packet starting with 0x7E Start Delimiter
     {
-      checkSum = 0;
-
-      for (int i=0; i<byteCount; i++)
+      byteCountMSB = getByte();
+      byteCountLSB  = getByte();   
+      
+      byteCount = (byteCountMSB <<= 8) + byteCountLSB;
+  
+      if (byteCount == 31) 
       {
-        inChar = getByte();
-        checkSum += inChar;
-        buffer[i] = inChar;
+        checkSum = 0;
+  
+        for (int i=0; i<byteCount; i++)
+        {
+          inChar = getByte();
+          checkSum += inChar;
+          buffer[i] = inChar;
+        }
+  
+        // get the checksum character
+        checkSum = getByte();
+  
+      //  Serial.print("\nChecksum: ");
+      //  Serial.println(checkSum, HEX);
+      
+        // Check the packet type - we only respond to "ZigBee Receive Packet"
+        packetType = buffer[0];
+        
+        if (packetType != 0x90)
+        {
+          return;
+        }
+        
+        unitID = buffer[12];   // Start of the user data portion
+        
+        // New on Leonardo board and enclosure - LED control    
+        lightLED(unitID);
+        resetTimer(unitID);
+       
+        // SEND THE BINARY DATA TO MAX
+        Serial.write(0x81);  //prefix the data with 0x81 (begins message to Max)
+        for (int p = 12; p < 31; p++)
+        {
+           Serial.write(buffer[p]);  //send sensor bytes
+        }
+        Serial.write(0xFF);  //suffix the data with 0xFF (ends message to Max)
+        
+        // TODO: Digital values? 0x82        
       }
-
-      // get the checksum character
-      checkSum = getByte();
-
-    //  Serial.print("\nChecksum: ");
-    //  Serial.println(checkSum, HEX);
-    
-      // Check the packet type - we only respond to "ZigBee Receive Packet"
-      packetType = buffer[0];
-      
-      if (packetType != 0x90)
-      {
-        return;
-      }
-      
-      unitID = buffer[12];   // Start of the user data portion
-      
-      // New on Leonardo board and enclosure - LED control    
-      lightLED(unitID);
-      delay(1);
-      clearLEDs();
-     
-      // SEND THE BINARY DATA TO MAX
-      Serial.write(0x81);  //prefix the data with 0x81 (begins message to Max)
-      for (int p = 12; p < 31; p++)
-      {
-         Serial.write(buffer[p]);  //send sensor bytes
-      }
-      Serial.write(0xFF);  //suffix the data with 0xFF (ends message to Max)
-      
-      // TODO: Digital values? 0x82        
     }
   }
 }
@@ -135,4 +141,42 @@ void lightLED(byte unitID)
     case 4: digitalWrite(LED_UNIT4, HIGH);  break;      
     default: break;
   }
+}
+
+void unlightLED(byte unitID)
+{
+  switch (unitID)
+  {
+    case 1: digitalWrite(LED_UNIT1, LOW);  break;
+    case 2: digitalWrite(LED_UNIT2, LOW);  break;
+    case 3: digitalWrite(LED_UNIT3, LOW);  break;
+    case 4: digitalWrite(LED_UNIT4, LOW);  break;      
+    default: break;
+  }
+}
+
+void resetTimer(byte unitID)
+{
+  switch (unitID)
+  {
+    case 1: 
+    case 2: 
+    case 3: 
+    case 4:  timer[unitID]=0;  break;
+    default: break;
+  }
+}
+
+void doTimer()
+{  
+  for (int i=1; i<=4; i++)
+  {
+    timer[i]++;
+    
+    if (timer[i] > LED_TIMEOUT)  
+    {
+      unlightLED(i);
+      timer[i]=LED_TIMEOUT; // Prevent overflow
+    }
+  } 
 }
