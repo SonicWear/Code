@@ -19,6 +19,14 @@ void setup()
   setupLEDs();
   Serial.begin(9600);    // Out to Max
   xbSerial.begin(9600);  // XBee serial to board 
+  
+  for (int i=1; i<=4; i++)
+  {
+     lightLED(i);
+     delay(200);
+     clearLEDs();
+  }
+  clearLEDs();
 }
 
 void loop() 
