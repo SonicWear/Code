@@ -3,6 +3,9 @@
 // This sketch reads the IMU, scales values to the range 0-1024,
 // and sends them to MAX using the SensorBox protocol 
 // ( https://cycling74.com/toolbox/sensorbox/ )
+//
+// To program, ensure the Arduino IDE is set to "Arduino Leonardo" under Tools->Board
+
 
 /*This code sits on the remote devices (what the dancers will wear) 
   in a multiple dancer setup with XBee Series 1 Radios.
