@@ -188,8 +188,10 @@ float Scale(long in, long smin, long smax)
 //Calculates the checksum and sends the message
 void sendMessage() 
 {
-  //Send analog values in the format 0x81 a1 a2.....0xFF
-  //Max wants 81 (start), FF is the end of the message
+  // Send the Unit ID
+  xbSerial.write(unitID);
+  // Send analog values in the format 0x81 a1 a2.....0xFF
+  // Max wants 81 (start), FF is the end of the message
   xbSerial.write(imask|1); //this is 0x81 
   xbSerial.write(analogValue, sizeof(analogValue));
   
