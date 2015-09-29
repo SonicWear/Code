@@ -35,7 +35,7 @@ int16_t mx, my, mz;
 #define RX    8   //  Use 17 for SoMo V4
 #define TX    4
 
-#define RATE  20  // Every xx milliseconds.  Do not set to less than 20 as to not swamp receiver XBee
+#define RATE  50  // Every xx milliseconds.  Do not set to less than 20 as to not swamp receiver XBee.  50 Recommended.
 
 SoftwareSerial mySerial(RX, TX); // RX, TX
 
@@ -61,7 +61,7 @@ void setup(void)
   digitalWrite(POWER, HIGH);  
 
   Wire.begin();
-  Serial.begin(57600);  
+  Serial.begin(38400);  
 
   // initialize device
   Serial.println("Initializing I2C devices...");
