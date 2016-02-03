@@ -48,7 +48,7 @@ char theEnd  = 255;  //byte to signal message end
 
 //SET UNIT ID HERE
 //*******************************
-byte unitID = 0x33;
+byte unitID = 0x31;
 //*******************************
 
 // Counter for the ID packet
@@ -71,7 +71,7 @@ void setup(void)
   Serial.println("Testing device connections...");
   Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
 
-  mySerial.begin(57600);  
+  mySerial.begin(38400);  
   
   digVal=0;
   
@@ -88,7 +88,7 @@ void loop()
 
   // display tab-separated accel/gyro x/y/z values
 /*
-Serial.print("a/g/m:\t");
+  Serial.print("a/g/m:\t");
   Serial.print(ax); 
   Serial.print("\t");
   Serial.print(ay); 
@@ -119,7 +119,7 @@ Serial.print("a/g/m:\t");
   int scaled_my = ScaleMAX_mag(my);
   int scaled_mz = ScaleMAX_mag(mz); 
 
-/*  
+/* 
    // display SCALED tab-separated accel/gyro x/y/z values
   Serial.print("Scaled:\t");
   Serial.print(scaled_ax); 
