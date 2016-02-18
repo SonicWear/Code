@@ -1,7 +1,7 @@
-//SoMo Backup Code for three remote devices sending to Max (Series 1 Radios)
-/*  Unit ID for each remote device needs to be set in the global declarations using the keys below:
+// SoMo Code for remote devices sending to Max (Series 1 Radios)
+// This version is SoMo_MAX.ino
 
-// This version is Leif_Mod_V2_Final
+/*  Unit ID for each remote device needs to be set in the global declarations using the keys below:
  
  Unit 0: 0x30
  Unit 1: 0x31
@@ -235,7 +235,7 @@ int ScaleMAX(int raw)
 // Scale the inputs for magnetometer only
 int ScaleMAX_mag(int raw)
 {
-   float temp = Scale(raw, -32000, 32000);
+   float temp = Scale(raw, -100, 300);
    
    return temp*1024;
 }
