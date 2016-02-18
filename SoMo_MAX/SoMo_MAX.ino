@@ -2,6 +2,8 @@
 // This version is SoMo_MAX.ino
 
 /*  Unit ID for each remote device needs to be set in the global declarations using the keys below:
+
+Note that Unit IDS are not used in the Series 1 Example for MAX
  
  Unit 0: 0x30
  Unit 1: 0x31
@@ -31,7 +33,7 @@ int16_t mx, my, mz;
 #define TX    4
 
 
-SoftwareSerial mySerial(8, 4); // RX, TX
+SoftwareSerial mySerial(RX, TX); // RX, TX
 
 char analogValue[20];               //array of analog values *in byte format for MAX* plus some buffer
 
@@ -45,8 +47,10 @@ byte unitID = 0x30;
 //*******************************
 
 
-void setup(void) {
-     // Turn on SoMo Power LED
+void setup(void) 
+{
+
+  // Turn on SoMo Power LED
   pinMode(POWER, OUTPUT);
   digitalWrite(POWER, HIGH);  
   Wire.begin();
@@ -62,11 +66,13 @@ void setup(void) {
 
   mySerial.begin(9600);  //this serial corresponds to MAX PATCH
   digVal=0;
-  for (int i = 2;i<14;i++){
+  for (int i = 2;i<14;i++)
+  {
     digitalWrite(i,HIGH);//enable pullups
   }
 
-/*  while (establishContact()==0){
+/*  while (establishContact()==0)
+  {
     Serial.println("Waiting for connection from MAX...");
     delay(100);
   }  //wait for 99 byte
@@ -74,13 +80,14 @@ void setup(void) {
 }
 
 //uses serial.write() to avoid needless symbol creation in MaxMSP  
-void loop() {
+void loop() 
+{
   // read raw accel/gyro measurements from device
   accelgyro.getMotion9(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
 
   // display tab-separated accel/gyro x/y/z values
 /*
-Serial.print("a/g/m:\t");
+  Serial.print("a/g/m:\t");
   Serial.print(ax); 
   Serial.print("\t");
   Serial.print(ay); 
@@ -111,6 +118,7 @@ Serial.print("a/g/m:\t");
   int scaled_my = ScaleMAX_mag(my);
   int scaled_mz = ScaleMAX_mag(mz); 
   
+/*
    // display SCALED tab-separated accel/gyro x/y/z values
   Serial.print("Scaled:\t");
   Serial.print(scaled_ax); 
@@ -130,23 +138,9 @@ Serial.print("a/g/m:\t");
   Serial.print(scaled_my); 
   Serial.print("\t");
   Serial.println(scaled_mz);
+*/
 
-  // pack the data from the MPU9150 into the SensorBox numbers to transmit
-  // currently only transmitting 6, but there are 9 of them in total
-  // the accelerometer (ax, ay, ax) and gyroscope (gx, gy, gz) are 16 bit 
-  // the magnetometer (mx, my, mz) are 13 bit
-  // SO, we remove bottom 2 bits, since we can only transmit 14
-//  packValueMPU9150(ax>>2);     //Eric added the <<2 because of the above note re: bits
-//  packValueMPU9150(ay>>2);
-//  packValueMPU9150(az>>2);
-//  packValueMPU9150(mx);
-//  packValueMPU9150(my);
-//  packValueMPU9150(mz);
-//  packValueMPU9150(gx>>2);
-//  packValueMPU9150(gy>>2);
-//  packValueMPU9150(gz>>2);
-
-  current=0;//reset analog value counter
+  current=0; //reset analog value counter
   
   packValueMPU9150(scaled_ax); 
   packValueMPU9150(scaled_ay);
@@ -158,36 +152,32 @@ Serial.print("a/g/m:\t");
   packValueMPU9150(scaled_gy);
   packValueMPU9150(scaled_gz);
 
-  char total = current; //+1;
+  char total = current;
   
   sendOFF(total);//send everything to Max 
   
   delay(10);//wait 10 milliseconds
-
-/*  //see if someone tried to turn us off:
-  if(establishContact()==1) {
-    while(establishContact()==0) {
-      delay(100);
-    }//go into idle mode
-  }
-*/
 }
 
-void sendOFF(char total){
+void sendOFF(char total)
+{
   //Send analog values in the format 0x81 a1 a2.....0xFF
   //Max wants 81 (start), FF is the end of the message
   mySerial.write(imask|1); //this is 0x81
+
   //Write UnitID to MAX
   //**********************************
   // Turn On/Off Serial ID
   //mySerial.write(unitID);
- //***********************************
-  for (int i = 0;i<total;i++){
+  //***********************************
+  for (int i = 0;i<total;i++)
+  {
     mySerial.write(analogValue[i]);   
   }
   mySerial.write(theEnd);//ends analog stream with 255
 
-/*  mySerial.write((imask|2));
+/*
+  mySerial.write((imask|2));
   mySerial.write((digVal&127));
   mySerial.write(digVal>>7);
   mySerial.write(theEnd);//ends digital message with 255
